@@ -1,3 +1,4 @@
+<img width="550" height="350" alt="image" src="https://github.com/user-attachments/assets/57977c20-1dca-4de3-8138-ebd5e88ea56a" />
 # ZeekrParts
 
 Интернет-магазин автозапчастей для автомобилей Zeekr. Построен на Django 4.2 с шаблонами на Tailwind CSS.
@@ -185,6 +186,7 @@ zeekr/
 - **UserProfile** — расширенный профиль пользователя
 - **UserAddress** — адрес доставки
 - **Favorite** — избранные товары
+<img width="308" height="537" alt="image" src="https://github.com/user-attachments/assets/83f78765-03cc-49b6-8772-d3babd2bf9b4" />
 
 ## Лицензия
 
