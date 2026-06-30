@@ -1,0 +1,66 @@
+{% extends 'shop/base.html' %}
+{% block title %}Настройки — ZeekrParts{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-4 py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <aside class="lg:col-span-3">
+      {% include "shop/_cabinet_sidebar.html" %}
+    </aside>
+
+    <div class="lg:col-span-9 space-y-6">
+
+      <div class="bg-white border rounded-2xl p-6 shadow-sm">
+        <div class="text-lg font-semibold">Настройки</div>
+        <div class="text-sm text-slate-500 mt-1">Управление аккаунтом</div>
+
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="border rounded-2xl p-5 hover:bg-slate-50">
+            <div class="font-semibold">Профиль</div>
+            <div class="text-sm text-slate-500 mt-1">Телефон и дата рождения</div>
+            <div class="mt-4 text-sm">
+              <div><span class="text-slate-500">Телефон:</span> <b>{{ profile_obj.phone|default:"—" }}</b></div>
+              <div class="mt-1">
+                <span class="text-slate-500">Дата рождения:</span>
+                <b>{% if profile_obj.birth_date %}{{ profile_obj.birth_date|date:"d.m.Y" }}{% else %}—{% endif %}</b>
+              </div>
+            </div>
+            <a href="{% url 'shop:profile_edit' %}"
+               class="mt-4 inline-flex items-center gap-2 text-sm text-blue-700 hover:underline">
+              Редактировать →
+            </a>
+          </div>
+
+          <div class="border rounded-2xl p-5 hover:bg-slate-50">
+            <div class="font-semibold">Адрес доставки</div>
+            <div class="text-sm text-slate-500 mt-1">Для быстрого оформления</div>
+            <div class="mt-4 text-sm">
+              <div><span class="text-slate-500">Город:</span> <b>{{ address_obj.city|default:"—" }}</b></div>
+              <div class="mt-1">
+                <span class="text-slate-500">Адрес:</span>
+                <b>{{ address_obj.street|default:"—" }}{% if address_obj.house %}, {{ address_obj.house }}{% endif %}</b>
+              </div>
+            </div>
+            <a href="{% url 'shop:address_edit' %}"
+               class="mt-4 inline-flex items-center gap-2 text-sm text-blue-700 hover:underline">
+              Редактировать →
+            </a>
+          </div>
+
+          <div class="border rounded-2xl p-5 hover:bg-slate-50 md:col-span-2">
+            <div class="font-semibold">Безопасность</div>
+            <div class="text-sm text-slate-500 mt-1">Смена пароля</div>
+            <a href="{% url 'shop:password_change' %}"
+               class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-700 text-white hover:bg-blue-800 text-sm">
+              <i class="fa-solid fa-key"></i> Изменить пароль
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+{% endblock %}

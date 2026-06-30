@@ -1,0 +1,135 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}Каталог — ZeekrParts{% endblock %}
+
+{% block content %}
+<section class="bg-slate-50 border-b">
+  <div class="container mx-auto px-4 py-6 md:py-8">
+    <div class="text-xs md:text-sm text-slate-500 mb-2">Главная / Каталог</div>
+    <h1 class="text-2xl md:text-3xl font-bold">Каталог запчастей</h1>
+    <p class="mt-2 text-slate-600">Найдите оригинальные запчасти для вашего автомобиля Zeekr</p>
+  </div>
+</section>
+
+<section class="container mx-auto px-4 py-6 md:py-8">
+
+  <!-- MOBILE: sticky quick bar -->
+  <div class="lg:hidden sticky top-[64px] z-30 -mx-4 px-4 py-3 bg-white/95 backdrop-blur border-b">
+    <div class="flex items-center gap-2">
+      <button type="button" data-open-filters
+              class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border bg-white hover:bg-slate-50 text-sm">
+        <i class="fa-solid fa-sliders"></i> Фильтры
+      </button>
+
+      <form method="get" class="flex-[1.6] relative">
+        {% for v in selected_category_slugs %}<input type="hidden" name="category" value="{{ v }}">{% endfor %}
+        {% for v in selected_brand_slugs %}<input type="hidden" name="brand" value="{{ v }}">{% endfor %}
+        {% if in_stock %}<input type="hidden" name="in_stock" value="1">{% endif %}
+        {% if price_min %}<input type="hidden" name="min" value="{{ price_min }}">{% endif %}
+        {% if price_max %}<input type="hidden" name="max" value="{{ price_max }}">{% endif %}
+        <input type="hidden" name="sort" value="{{ sort }}">
+
+        <input name="q" value="{{ q }}" placeholder="Быстрый поиск…"
+               class="w-full rounded-xl border px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+        <button class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400" aria-label="Поиск">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4 lg:mt-0">
+    <!-- LEFT FILTERS (desktop) -->
+    <aside class="hidden lg:block lg:col-span-3">
+      {% include 'shop/_filters_panel.html' %}
+    </aside>
+
+    <!-- RIGHT: PRODUCTS -->
+    <div class="lg:col-span-9">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div class="font-semibold">Все запчасти</div>
+          <div class="text-sm text-slate-500">Найдено: {{ page_obj.paginator.count }} товаров</div>
+        </div>
+
+        <form method="get" class="flex items-center gap-3">
+          {% for v in selected_category_slugs %}<input type="hidden" name="category" value="{{ v }}">{% endfor %}
+          {% for v in selected_brand_slugs %}<input type="hidden" name="brand" value="{{ v }}">{% endfor %}
+          {% if in_stock %}<input type="hidden" name="in_stock" value="1">{% endif %}
+          {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
+          {% if price_min %}<input type="hidden" name="min" value="{{ price_min }}">{% endif %}
+          {% if price_max %}<input type="hidden" name="max" value="{{ price_max }}">{% endif %}
+
+          <select name="sort" onchange="this.form.submit()"
+                  class="rounded-xl border px-4 py-2 text-sm bg-white w-full md:w-auto">
+            <option value="popular" {% if sort == "popular" %}selected{% endif %}>Сортировать: Популярные</option>
+            <option value="new" {% if sort == "new" %}selected{% endif %}>Новинки</option>
+            <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Цена: по возрастанию</option>
+            <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Цена: по убыванию</option>
+            <option value="name" {% if sort == "name" %}selected{% endif %}>По названию</option>
+          </select>
+        </form>
+      </div>
+
+      <!-- Grid -->
+      <div class="mt-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+        {% for p in products %}
+          {% include 'shop/_product_card.html' with p=p favorite_ids=favorite_ids %}
+        {% empty %}
+          <div class="col-span-full bg-white border rounded-2xl p-6 text-sm text-slate-600">
+            Ничего не найдено. Попробуйте изменить фильтры.
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if page_obj.paginator.num_pages > 1 %}
+        <div class="mt-8 flex items-center justify-center gap-2 flex-wrap">
+          {% if page_obj.has_previous %}
+            <a class="px-3 py-2 rounded-xl border bg-white hover:bg-slate-50"
+               href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v|urlencode }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
+              Предыдущая
+            </a>
+          {% endif %}
+
+          {% for n in page_obj.paginator.page_range %}
+            {% if n == page_obj.number %}
+              <span class="px-3 py-2 rounded-xl bg-blue-700 text-white">{{ n }}</span>
+            {% else %}
+              <a class="px-3 py-2 rounded-xl border bg-white hover:bg-slate-50"
+                 href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v|urlencode }}&{% endif %}{% endfor %}page={{ n }}">
+                {{ n }}
+              </a>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <a class="px-3 py-2 rounded-xl border bg-white hover:bg-slate-50"
+               href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v|urlencode }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
+              Следующая
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- MOBILE FILTERS SHEET -->
+  <div id="mFiltersOverlay" class="hidden fixed inset-0 bg-black/40 z-[80]"></div>
+  <div id="mFiltersSheet" class="fixed inset-x-0 bottom-0 z-[90] bg-white rounded-t-3xl border-t translate-y-full transition-transform duration-200">
+    <div class="px-4 py-4 border-b flex items-center justify-between">
+      <div class="font-semibold">Фильтры</div>
+      <button type="button" data-close-filters class="w-10 h-10 rounded-xl border hover:bg-slate-50" aria-label="Закрыть">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="p-4 max-h-[70vh] overflow-auto">
+      {% include 'shop/_filters_panel.html' %}
+    </div>
+  </div>
+</section>
+
+<script src="{% static 'shop/js/catalog.js' %}"></script>
+{% endblock %}

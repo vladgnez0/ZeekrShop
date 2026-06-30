@@ -1,0 +1,60 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Страница не найдена — ZeekrParts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'shop/css/styles.css' %}">
+</head>
+
+<body class="bg-slate-50 text-slate-900 flex items-center justify-center min-h-screen">
+
+  <div class="max-w-lg w-full px-6">
+    <div class="bg-white border rounded-3xl p-8 text-center shadow-sm">
+
+      <!-- Логотип -->
+      <div class="flex items-center justify-center gap-2 text-xl font-bold mb-6">
+        <span class="text-blue-700">Zeekr</span><span>Parts</span>
+      </div>
+
+      <!-- Код -->
+      <div class="text-7xl font-extrabold text-blue-700 tracking-wider">
+        404
+      </div>
+
+      <h1 class="mt-4 text-xl font-semibold">
+        Страница не найдена
+      </h1>
+
+      <p class="mt-2 text-sm text-slate-600">
+        Возможно, вы перешли по устаревшей ссылке или страница была удалена.
+      </p>
+
+      <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="{% url 'shop:home' %}"
+           class="px-5 py-3 rounded-xl bg-blue-700 text-white hover:bg-blue-800 font-medium">
+          На главную
+        </a>
+
+        <a href="{% url 'shop:catalog' %}"
+           class="px-5 py-3 rounded-xl border hover:bg-slate-50 font-medium">
+          В каталог
+        </a>
+      </div>
+
+      <div class="mt-6 text-xs text-slate-400">
+        Если вы уверены, что это ошибка — свяжитесь с нами.
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

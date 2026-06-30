@@ -1,0 +1,136 @@
+{% extends 'shop/base.html' %}
+{% block title %}Главная — ZeekrParts{% endblock %}
+{% block content %}
+{% load static %}
+<section class="relative">
+  <!-- фон -->
+  <div class="h-[360px] md:h-[420px] bg-center bg-cover"
+       style="background-image:url('{% static 'shop/img/hero.jpg' %}')">
+  </div>
+
+  <!-- затемнение -->
+  <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/55 to-black/20"></div>
+
+  <!-- контент -->
+  <div class="absolute inset-0">
+    <div class="container mx-auto px-4 h-full flex items-center">
+      <div class="max-w-2xl text-white">
+        <h1 class="text-3xl md:text-4xl font-bold leading-tight">
+          Оригинальные запчасти для автомобилей Zeekr
+        </h1>
+        <p class="mt-4 text-white/80">
+          Найдите все необходимые запчасти для вашего автомобиля Zeekr с гарантией качества и быстрой доставкой
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="{% url 'shop:catalog' %}"
+             class="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-medium">
+            Каталог запчастей
+          </a>
+          <a href="{% url 'shop:contacts' %}"
+             class="px-6 py-3 rounded-xl border border-white/30 hover:bg-white/10 text-white font-medium">
+            Связаться с нами
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- костыль !-->
+<section class="relative pb-12">
+</section>
+
+
+<section class="container mx-auto px-4 pb-12">
+  <div class="flex items-end justify-between mb-4">
+    <h2 class="text-xl font-semibold">Категории</h2>
+    <a href="{% url 'shop:catalog' %}" class="text-sm text-blue-700 hover:underline">Смотреть все</a>
+  </div>
+
+  {% if categories %}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {% for c in categories %}
+        <a href="{% url 'shop:catalog' %}?category={{ c.slug }}"
+           class="bg-white border rounded-2xl p-4 hover:shadow-sm">
+          <div class="font-medium">{{ c.name }}</div>
+          {% if c.description %}<div class="text-xs text-gray-500 mt-1">{{ c.description }}</div>{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-sm text-gray-500">Пока нет категорий — добавь их в админке.</div>
+  {% endif %}
+</section>
+
+<section class="container mx-auto px-4 pb-16">
+  <div class="flex items-end justify-between mb-4">
+    <h2 class="text-xl font-semibold">Рекомендуем</h2>
+    <a href="{% url 'shop:catalog' %}" class="text-sm text-blue-700 hover:underline">В каталог</a>
+  </div>
+
+  {% if featured_products %}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {% for p in featured_products %}
+        {% include 'shop/_product_card.html' with p=p favorite_ids=favorite_ids %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-sm text-gray-500">Нет рекомендованных товаров — отметь “is_featured” в админке.</div>
+  {% endif %}
+</section>
+<section class="container mx-auto px-4 py-12">
+  <h2 class="text-xl font-semibold text-center">Почему выбирают нас</h2>
+
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white border rounded-2xl p-6">
+      <div class="w-10 h-10 rounded-xl bg-green-50 border border-green-200 flex items-center justify-center">
+        <i class="fa-solid fa-check text-green-600"></i>
+      </div>
+      <div class="mt-3 font-semibold">Оригинальные детали</div>
+      <p class="mt-2 text-sm text-gray-600">
+        Все запчасти являются оригинальными изделиями Zeekr с гарантией качества
+      </p>
+    </div>
+
+    <div class="bg-white border rounded-2xl p-6">
+      <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+        <i class="fa-solid fa-truck-fast text-blue-700"></i>
+      </div>
+      <div class="mt-3 font-semibold">Быстрая доставка</div>
+      <p class="mt-2 text-sm text-gray-600">
+        Доставляем заказы за 1–2 дня по всей России
+      </p>
+    </div>
+
+    <div class="bg-white border rounded-2xl p-6">
+      <div class="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center">
+        <i class="fa-solid fa-headset text-purple-700"></i>
+      </div>
+      <div class="mt-3 font-semibold">Профессиональная поддержка</div>
+      <p class="mt-2 text-sm text-gray-600">
+        Наши специалисты помогут подобрать правильные запчасти для вашего автомобиля
+      </p>
+    </div>
+  </div>
+</section>
+<section class="container mx-auto px-4 pb-12">
+  <div class="rounded-2xl bg-gradient-to-r from-blue-700 to-indigo-600 text-white p-8 md:p-10
+              flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+    <div>
+      <div class="text-xl font-semibold">Нужна помощь в выборе запчастей?</div>
+      <div class="mt-2 text-white/80 text-sm">Наши специалисты готовы ответить на все ваши вопросы</div>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <a href="tel:{% if site_settings.phone %}{{ site_settings.phone }}{% endif %}"
+         class="px-5 py-3 rounded-xl bg-white text-blue-800 font-medium">
+        <i class="fa-solid fa-phone mr-2"></i>{% if site_settings.phone %}{{ site_settings.phone }}{% else %}+7 (495) 123-45-67{% endif %}
+      </a>
+      <a href="{% url 'shop:contacts' %}"
+         class="px-5 py-3 rounded-xl border border-white/30 hover:bg-white/10 font-medium">
+        Написать в чат
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}Контакты — ZeekrParts{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="relative">
+  <div class="h-[220px] md:h-[260px] bg-center bg-cover"
+       style="background-image:url('{% static 'shop/img/hero.jpg' %}')"></div>
+  <div class="absolute inset-0 bg-black/55"></div>
+
+  <div class="absolute inset-0">
+    <div class="container mx-auto px-4 h-full flex items-center">
+      <div class="text-white">
+        <div class="text-white/80 text-sm mb-2">Главная / Контакты</div>
+        <h1 class="text-2xl md:text-3xl font-bold">Контакты</h1>
+        <p class="mt-2 text-white/80 max-w-2xl">
+          Свяжитесь с нами удобным способом — поможем с подбором и оформлением заказа
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<section class="container mx-auto px-4 py-10">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- LEFT: Cards -->
+    <div class="lg:col-span-5 space-y-4">
+      <div class="bg-white border rounded-3xl p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+            <i class="fa-solid fa-phone text-blue-700 text-lg"></i>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold">Телефон</div>
+            <div class="mt-1 text-sm text-gray-600">
+              {% if site_settings.phone %}
+                <a class="text-blue-700 hover:underline" href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>
+              {% else %}
+                <span class="text-gray-500">Добавьте телефон в админке (SiteSetting)</span>
+              {% endif %}
+            </div>
+            <div class="mt-2 text-xs text-gray-400">Звонки и WhatsApp</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border rounded-3xl p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center">
+            <i class="fa-solid fa-envelope text-purple-700 text-lg"></i>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold">Почта</div>
+            <div class="mt-1 text-sm text-gray-600">
+              {% if site_settings.email %}
+                <a class="text-blue-700 hover:underline" href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
+              {% else %}
+                <span class="text-gray-500">Добавьте email в админке (SiteSetting)</span>
+              {% endif %}
+            </div>
+            <div class="mt-2 text-xs text-gray-400">Отвечаем обычно в течение дня</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border rounded-3xl p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-green-50 border border-green-200 flex items-center justify-center">
+            <i class="fa-solid fa-location-dot text-green-700 text-lg"></i>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold">Адрес</div>
+            <div class="mt-1 text-sm text-gray-600">
+              {% if site_settings.address %}
+                {{ site_settings.address }}
+              {% else %}
+                <span class="text-gray-500">Добавьте адрес в админке (SiteSetting)</span>
+              {% endif %}
+            </div>
+            {% if site_settings.work_hours %}
+              <div class="mt-2 text-xs text-gray-500"><i class="fa-regular fa-clock mr-2"></i>{{ site_settings.work_hours }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Social / messengers -->
+      <div class="bg-white border rounded-3xl p-6">
+        <div class="font-semibold">Мессенджеры</div>
+        <div class="mt-4 flex flex-wrap gap-3">
+          {% if site_settings.telegram_url %}
+            <a href="{{ site_settings.telegram_url }}"
+               class="px-4 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 hover:bg-blue-100 text-sm">
+              <i class="fa-brands fa-telegram mr-2"></i>Telegram
+            </a>
+          {% endif %}
+          {% if site_settings.whatsapp_url %}
+            <a href="{{ site_settings.whatsapp_url }}"
+               class="px-4 py-2 rounded-xl bg-green-50 border border-green-200 text-green-800 hover:bg-green-100 text-sm">
+              <i class="fa-brands fa-whatsapp mr-2"></i>WhatsApp
+            </a>
+          {% endif %}
+          {% if site_settings.vk_url %}
+            <a href="{{ site_settings.vk_url }}"
+               class="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 hover:bg-slate-100 text-sm">
+              <i class="fa-brands fa-vk mr-2"></i>VK
+            </a>
+          {% endif %}
+
+          {% if not site_settings.telegram_url and not site_settings.whatsapp_url and not site_settings.vk_url %}
+            <div class="text-sm text-gray-500">
+              Добавьте ссылки в админке (SiteSetting.telegram_url / whatsapp_url / vk_url)
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Form + Map -->
+    <div class="lg:col-span-7 space-y-6">
+      <!-- Form -->
+      <div class="bg-white border rounded-3xl p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="text-xl font-semibold">Напишите нам</div>
+            <div class="mt-1 text-sm text-gray-600">Заполните форму — мы свяжемся с вами</div>
+          </div>
+          <div class="hidden md:block text-xs text-gray-500">
+            <span class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border">
+              <i class="fa-solid fa-shield text-slate-500"></i> Без спама
+            </span>
+          </div>
+        </div>
+
+        {% if messages %}
+          <div class="mt-4 space-y-2">
+            {% for message in messages %}
+              <div class="rounded-xl border p-3 text-sm
+                          {% if message.tags == 'success' %} border-green-200 bg-green-50 text-green-800
+                          {% elif message.tags == 'error' %} border-red-200 bg-red-50 text-red-800
+                          {% else %} border-slate-200 bg-slate-50 text-slate-700 {% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {% csrf_token %}
+
+          <div>
+            <label class="text-sm font-medium">Имя</label>
+            <input name="name" required
+                   class="mt-2 w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                   placeholder="Ваше имя">
+          </div>
+
+          <div>
+            <label class="text-sm font-medium">Телефон</label>
+            <input name="phone"
+                   class="mt-2 w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                   placeholder="+7 (999) 123-45-67">
+          </div>
+
+          <div>
+            <label class="text-sm font-medium">Email</label>
+            <input name="email" type="email"
+                   class="mt-2 w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                   placeholder="you@email.com">
+          </div>
+
+          <div>
+            <label class="text-sm font-medium">Тема</label>
+            <input name="subject"
+                   class="mt-2 w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                   placeholder="Подбор запчасти / Доставка / Оплата">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="text-sm font-medium">Сообщение</label>
+            <textarea name="message" rows="5" required
+                      class="mt-2 w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      placeholder="Опишите, что нужно (модель, год, VIN при наличии)"></textarea>
+          </div>
+
+          <div class="md:col-span-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <button type="submit"
+                    class="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-medium">
+              Отправить сообщение
+            </button>
+            <div class="text-xs text-gray-500">
+              Нажимая “Отправить”, вы соглашаетесь на обработку данных
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Map -->
+      <div class="bg-white border rounded-3xl overflow-hidden">
+        <div class="p-6 border-b">
+          <div class="font-semibold">Мы на карте</div>
+          <div class="text-sm text-gray-600 mt-1">Приезжайте или оформляйте доставку</div>
+        </div>
+
+        <div class="h-[360px]">
+          {% if site_settings.map_embed %}
+            {{ site_settings.map_embed|safe }}
+          {% elif site_settings.map_url %}
+            <iframe src="{{ site_settings.map_url }}" class="w-full h-full" frameborder="0"></iframe>
+          {% else %}
+            <div class="w-full h-full flex items-center justify-center text-sm text-gray-500">
+              Добавьте карту в админке (SiteSetting.map_embed или map_url)
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="mt-10 rounded-2xl bg-gradient-to-r from-blue-700 to-indigo-600 text-white p-8
+              flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+    <div>
+      <div class="text-lg font-semibold">Нужна помощь в выборе запчастей?</div>
+      <div class="mt-2 text-white/80 text-sm">Мы подберём детали под ваш Zeekr и подскажем сроки</div>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a href="tel:{% if site_settings.phone %}{{ site_settings.phone }}{% endif %}"
+         class="px-5 py-3 rounded-xl bg-white text-blue-800 font-medium">
+        <i class="fa-solid fa-phone mr-2"></i>{% if site_settings.phone %}{{ site_settings.phone }}{% else %}+7 (495) 123-45-67{% endif %}
+      </a>
+      <a href="{% url 'shop:catalog' %}"
+         class="px-5 py-3 rounded-xl border border-white/30 hover:bg-white/10 font-medium">
+        Перейти в каталог
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

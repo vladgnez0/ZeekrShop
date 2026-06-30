@@ -1,0 +1,99 @@
+<form method="get" class="bg-white border rounded-2xl p-5 sticky top-4">
+  <div class="flex items-center justify-between">
+    <div class="font-semibold">Фильтры</div>
+    <a href="{% url 'shop:catalog' %}" class="text-sm text-blue-700 hover:underline">Сбросить</a>
+  </div>
+
+  <!-- Search -->
+  <div class="mt-4">
+    <label class="text-sm font-medium">Поиск</label>
+    <div class="mt-2 relative">
+      <input name="q" value="{{ q }}" placeholder="Поиск по каталогу..."
+             class="w-full rounded-xl border px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-200">
+      <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="mt-6">
+    <div class="text-sm font-semibold">Категории</div>
+    <div class="mt-3 space-y-2">
+      {% for c in categories %}
+        <label class="flex items-start gap-2 text-sm text-slate-700">
+          <input type="checkbox" name="category" value="{{ c.slug }}" class="mt-1"
+                 {% if c.slug in selected_category_slugs %}checked{% endif %}>
+          <span class="leading-5">{{ c.name }}</span>
+        </label>
+
+        {% if c.children.all %}
+          <div class="ml-6 space-y-2">
+            {% for ch in c.children.all %}
+              {% if ch.is_active %}
+                <label class="flex items-start gap-2 text-sm text-slate-600">
+                  <input type="checkbox" name="category" value="{{ ch.slug }}" class="mt-1"
+                         {% if ch.slug in selected_category_slugs %}checked{% endif %}>
+                  <span class="leading-5">{{ ch.name }}</span>
+                </label>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Price -->
+  <div class="mt-6">
+    <div class="text-sm font-semibold">Цена</div>
+    <div class="mt-3 grid grid-cols-2 gap-3">
+      <div>
+        <label class="text-xs text-slate-500">от</label>
+        <input name="min" value="{{ price_min }}" inputmode="numeric"
+               class="mt-1 w-full rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+               placeholder="{{ ui_min }}">
+      </div>
+      <div>
+        <label class="text-xs text-slate-500">до</label>
+        <input name="max" value="{{ price_max }}" inputmode="numeric"
+               class="mt-1 w-full rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+               placeholder="{{ ui_max }}">
+      </div>
+    </div>
+    <div class="mt-4">
+      <input id="priceSlider" type="range" min="{{ ui_min }}" max="{{ ui_max }}" value="{{ price_max|default:ui_max }}" class="w-full">
+      <div class="flex justify-between text-xs text-slate-500 mt-2">
+        <span>{{ ui_min }}</span>
+        <span>{{ ui_max }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Brands -->
+  <div class="mt-6">
+    <div class="text-sm font-semibold">Бренд</div>
+    <div class="mt-3 space-y-2 max-h-44 overflow-auto pr-1">
+      {% for b in brands %}
+        <label class="flex items-start gap-2 text-sm text-slate-700">
+          <input type="checkbox" name="brand" value="{{ b.slug }}" class="mt-1"
+                 {% if b.slug in selected_brand_slugs %}checked{% endif %}>
+          <span class="leading-5">{{ b.name }}</span>
+        </label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Stock -->
+  <div class="mt-6">
+    <div class="text-sm font-semibold">Наличие</div>
+    <label class="mt-3 flex items-center gap-2 text-sm text-slate-700">
+      <input type="checkbox" name="in_stock" value="1" {% if in_stock %}checked{% endif %}>
+      В наличии
+    </label>
+  </div>
+
+  <input type="hidden" name="sort" value="{{ sort }}">
+
+  <button class="mt-6 w-full px-4 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-medium">
+    Применить фильтр
+  </button>
+</form>

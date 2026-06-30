@@ -1,0 +1,40 @@
+<div class="bg-white border rounded-2xl p-5 shadow-sm sticky top-24">
+  <div class="flex items-center gap-3">
+    <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+      <i class="fa-solid fa-user text-blue-700"></i>
+    </div>
+    <div class="min-w-0">
+      <div class="font-semibold truncate">
+        {{ request.user.get_full_name|default:request.user.username }}
+      </div>
+      <div class="text-xs text-slate-500 truncate">
+        {{ request.user.email|default:"Почта не указана" }}
+      </div>
+    </div>
+  </div>
+
+  <nav class="mt-5 space-y-2 text-sm">
+    <a href="{% url 'shop:profile' %}"
+       class="flex items-center gap-2 px-3 py-2 rounded-xl
+              {% if active_tab == 'profile' %}bg-blue-50 text-blue-800 border border-blue-200{% else %}hover:bg-slate-50 text-slate-700{% endif %}">
+      <i class="fa-regular fa-id-badge"></i> Мой профиль
+    </a>
+
+    <a href="{% url 'shop:favorites' %}"
+       class="flex items-center gap-2 px-3 py-2 rounded-xl
+              {% if active_tab == 'favorites' %}bg-blue-50 text-blue-800 border border-blue-200{% else %}hover:bg-slate-50 text-slate-700{% endif %}">
+      <i class="fa-regular fa-heart"></i> Избранное
+    </a>
+
+    <a href="{% url 'shop:settings' %}"
+       class="flex items-center gap-2 px-3 py-2 rounded-xl
+              {% if active_tab == 'settings' %}bg-blue-50 text-blue-800 border border-blue-200{% else %}hover:bg-slate-50 text-slate-700{% endif %}">
+      <i class="fa-solid fa-gear"></i> Настройки
+    </a>
+
+    <a href="{% url 'shop:logout' %}"
+       class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-red-50 text-red-700">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i> Выйти
+    </a>
+  </nav>
+</div>

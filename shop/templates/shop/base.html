@@ -1,0 +1,343 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}ZeekrParts{% endblock %}</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="{% static 'shop/css/styles.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Mobile drawer overlay -->
+  <div id="mOverlay" class="hidden fixed inset-0 bg-black/40 z-[60]"></div>
+
+  <!-- Mobile drawer -->
+  <aside id="mDrawer" class="fixed inset-y-0 left-0 w-[86%] max-w-xs bg-white z-[70] shadow-2xl -translate-x-full transition-transform duration-200">
+    <div class="p-5 border-b">
+      <div class="flex items-center justify-between">
+        <a href="{% url 'shop:home' %}" class="flex items-center gap-2 font-bold text-lg">
+          <span class="text-blue-700">Zeekr</span><span>Parts</span>
+        </a>
+        <button id="mClose" class="w-10 h-10 rounded-xl border hover:bg-slate-50" aria-label="Закрыть меню">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 text-sm text-slate-600">
+        {% if request.user.is_authenticated %}
+          <div class="font-semibold truncate">{{ request.user.get_full_name|default:request.user.username }}</div>
+          <div class="text-xs text-slate-500 truncate">{{ request.user.email|default:"Почта не указана" }}</div>
+        {% else %}
+          <div class="text-xs text-slate-500">Войдите, чтобы видеть заказы и избранное</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <nav class="p-4 space-y-1 text-sm">
+      <a href="{% url 'shop:catalog' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50">
+        <i class="fa-solid fa-circle-nodes"></i> Каталог
+      </a>
+      <a href="{% url 'shop:about' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50">
+        <i class="fa-regular fa-circle-question"></i> О нас
+      </a>
+      <a href="{% url 'shop:contacts' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50">
+        <i class="fa-regular fa-envelope"></i> Контакты
+      </a>
+      <a href="{% url 'shop:favorites' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50">
+        <i class="fa-solid fa-heart"></i> Избранное
+      </a>
+      <a href="{% url 'shop:cart' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50">
+        <i class="fa-solid fa-cart-shopping"></i> Корзина
+      </a>
+
+      <div class="pt-3 mt-3 border-t"></div>
+
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'shop:profile' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50">
+          <i class="fa-solid fa-user"></i> Личный кабинет
+        </a>
+        <a href="{% url 'shop:logout' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-red-700">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Выйти
+        </a>
+      {% else %}
+        <a href="{% url 'shop:auth' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50">
+          <i class="fa-solid fa-right-to-bracket"></i> Войти
+        </a>
+        <a href="{% url 'shop:register' %}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50">
+          <i class="fa-regular fa-user"></i> Регистрация
+        </a>
+      {% endif %}
+    </nav>
+  </aside>
+
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+
+      <div class="flex items-center justify-between py-3 md:py-4 gap-3">
+        <!-- Hamburger (mobile) -->
+        <button id="mOpen" class="lg:hidden w-10 h-10 rounded-xl border hover:bg-slate-50" aria-label="Открыть меню">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- Logo -->
+        <a href="{% url 'shop:home' %}" class="flex items-center gap-2 font-bold text-lg md:text-xl shrink-0">
+          <span class="text-blue-700">Zeekr</span><span>Parts</span>
+        </a>
+
+        <!-- Desktop search -->
+        <form id="searchForm" action="{% url 'shop:catalog' %}" method="get" class="hidden md:flex flex-1 max-w-xl mx-2 lg:mx-6 relative overflow-visible">
+          {% if request.resolver_match and request.resolver_match.url_name == "catalog" %}
+            {% for key, value in request.GET.items %}
+              {% if key != "q" and key != "page" %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          <label class="sr-only" for="q">Поиск</label>
+          <div class="relative w-full overflow-visible">
+            <input id="q" name="q" value="{{ request.GET.q|default:'' }}" autocomplete="off"
+                   class="w-full border rounded-xl px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                   placeholder="Поиск по каталогу…">
+            <button type="submit" aria-label="Поиск" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+
+            <!-- Dropdown (desktop) -->
+            <div id="searchDropdown" class="hidden absolute left-0 right-0 mt-2 bg-white border rounded-2xl shadow-2xl overflow-hidden z-[9999]">
+              <div class="px-4 py-2 text-xs text-slate-500 border-b bg-slate-50">Подсказки (Enter — искать, ↑↓ — выбрать)</div>
+              <div id="searchDropdownList" class="max-h-80 overflow-auto"></div>
+              <a href="#" id="searchShowAll" class="block px-4 py-2 text-xs text-blue-700 hover:bg-slate-50 border-t bg-white">
+                Показать все результаты →
+              </a>
+            </div>
+          </div>
+        </form>
+
+        <!-- Desktop nav -->
+        <nav class="hidden lg:flex items-center gap-6">
+          <a href="{% url 'shop:catalog' %}" class="text-gray-700 hover:text-gray-900">Каталог</a>
+          <a href="{% url 'shop:about' %}" class="text-gray-700 hover:text-gray-900">О нас</a>
+          <a href="{% url 'shop:contacts' %}" class="text-gray-700 hover:text-gray-900">Контакты</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-3 md:gap-4 shrink-0">
+          <a aria-label="Избранное" href="{% url 'shop:favorites' %}" class="hidden sm:inline-flex text-gray-700 hover:text-gray-900">
+            <i class="fa-solid fa-heart text-lg"></i>
+          </a>
+
+          <a aria-label="Корзина" href="{% url 'shop:cart' %}" class="relative text-gray-700 hover:text-gray-900">
+            <i class="fa-solid fa-shopping-cart text-lg"></i>
+            {% if cart_count %}
+              <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full px-1.5 py-0.5">{{ cart_count }}</span>
+            {% endif %}
+          </a>
+
+          {% if request.user.is_authenticated %}
+            <a aria-label="Профиль" href="{% url 'shop:profile' %}" class="hidden sm:inline-flex text-gray-700 hover:text-gray-900">
+              <i class="fa-solid fa-user text-lg"></i>
+            </a>
+            <a href="{% url 'shop:logout' %}" class="hidden sm:inline text-sm text-gray-700 hover:text-gray-900">Выход</a>
+          {% else %}
+            <a href="{% url 'shop:auth' %}" class="hidden sm:inline text-gray-700 hover:text-gray-900">Войти</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Mobile search row -->
+      <div class="md:hidden pb-3">
+        <form id="searchFormMobile" action="{% url 'shop:catalog' %}" method="get" class="relative">
+          <label class="sr-only" for="q_m">Поиск</label>
+          <input id="q_m" name="q" value="{{ request.GET.q|default:'' }}" autocomplete="off"
+                 class="w-full border rounded-xl px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                 placeholder="Поиск по каталогу…">
+          <button type="submit" aria-label="Поиск" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+
+          <!-- Dropdown (mobile) -->
+          <div id="searchDropdownMobile" class="hidden absolute left-0 right-0 mt-2 bg-white border rounded-2xl shadow-2xl overflow-hidden z-[9999]">
+            <div class="px-4 py-2 text-xs text-slate-500 border-b bg-slate-50">Подсказки</div>
+            <div id="searchDropdownListMobile" class="max-h-80 overflow-auto"></div>
+            <a href="#" id="searchShowAllMobile" class="block px-4 py-2 text-xs text-blue-700 hover:bg-slate-50 border-t bg-white">
+              Показать все результаты →
+            </a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="container mx-auto px-4 pt-4">
+      {% for message in messages %}
+        <div class="mb-3 rounded-xl border px-4 py-3 text-sm border-blue-200 bg-blue-50">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- bottom padding so fixed bottom nav doesn't overlap content -->
+  <main class="min-h-[60vh] pb-24 md:pb-0">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Mobile bottom nav -->
+ <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t z-50">
+  <div class="max-w-screen-sm mx-auto grid grid-cols-5">
+
+    <a href="{% url 'shop:home' %}"
+       class="py-2 flex flex-col items-center justify-center text-xs gap-1 text-slate-700">
+      <i class="fa-solid fa-house text-lg leading-none"></i>
+      <span>Главная</span>
+    </a>
+
+    <a href="{% url 'shop:catalog' %}"
+       class="py-2 flex flex-col items-center justify-center text-xs gap-1 text-slate-700">
+      <i class="fa-solid fa-compass text-lg leading-none"></i>
+      <span>Каталог</span>
+    </a>
+
+    <a href="{% url 'shop:favorites' %}"
+       class="py-2 flex flex-col items-center justify-center text-xs gap-1 text-slate-700">
+      <i class="fa-solid fa-heart text-lg leading-none"></i>
+      <span>Избранное</span>
+    </a>
+
+    <a href="{% url 'shop:cart' %}"
+       class="py-2 flex flex-col items-center justify-center text-xs gap-1 text-slate-700">
+      <i class="fa-solid fa-cart-shopping text-lg leading-none"></i>
+      <span>Корзина</span>
+    </a>
+
+    {% if request.user.is_authenticated %}
+      <a href="{% url 'shop:profile' %}"
+         class="py-2 flex flex-col items-center justify-center text-xs gap-1 text-slate-700">
+        <i class="fa-solid fa-user text-lg leading-none"></i>
+        <span>Профиль</span>
+      </a>
+    {% else %}
+      <a href="{% url 'shop:auth' %}"
+         class="py-2 flex flex-col items-center justify-center text-xs gap-1 text-slate-700">
+        <i class="fa-solid fa-right-to-bracket text-lg leading-none"></i>
+        <span>Вход</span>
+      </a>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- чтобы контент не прятался под нижнее меню -->
+<div class="h-16 md:hidden"></div>
+
+  <footer class="mt-12 bg-slate-950 text-slate-200">
+    <div class="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center gap-2 font-bold text-lg">
+          <span class="text-blue-500">Zeekr</span><span>Parts</span>
+        </div>
+        <p class="mt-3 text-sm text-slate-400">Лучший выбор оригинальных запчастей для автомобилей Zeekr</p>
+      </div>
+
+      <div>
+        <div class="font-semibold mb-3">Информация</div>
+        <ul class="space-y-2 text-sm text-slate-400">
+          <li><a class="hover:text-white" href="{% url 'shop:about' %}">О компании</a></li>
+          <li><a class="hover:text-white" href="{% url 'shop:contacts' %}">Контакты</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="font-semibold mb-3">Контакты</div>
+        <div class="space-y-2 text-sm text-slate-400">
+          {% if site_settings.address %}<div><i class="fa-solid fa-location-dot mr-2"></i>{{ site_settings.address }}</div>{% endif %}
+          {% if site_settings.phone %}<div><i class="fa-solid fa-phone mr-2"></i>{{ site_settings.phone }}</div>{% endif %}
+          {% if site_settings.email %}<div><i class="fa-solid fa-envelope mr-2"></i>{{ site_settings.email }}</div>{% endif %}
+          {% if site_settings.work_hours %}<div><i class="fa-regular fa-clock mr-2"></i>{{ site_settings.work_hours }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div>
+        <div class="font-semibold mb-3">Соцсети</div>
+        <div class="flex flex-wrap gap-3 text-sm text-slate-400">
+          {% if site_settings.telegram_url %}<a class="hover:text-white" href="{{ site_settings.telegram_url }}">Telegram</a>{% endif %}
+          {% if site_settings.whatsapp_url %}<a class="hover:text-white" href="{{ site_settings.whatsapp_url }}">WhatsApp</a>{% endif %}
+          {% if site_settings.vk_url %}<a class="hover:text-white" href="{{ site_settings.vk_url }}">VK</a>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-white/10">
+      <div class="container mx-auto px-4 py-4 text-xs text-slate-500">© {% now "Y" %} ZeekrParts. Все права защищены.</div>
+    </div>
+  </footer>
+
+  <script src="{% static 'shop/js/main.js' %}"></script>
+  <script src="{% static 'shop/js/search_suggest.js' %}"></script>
+
+  <script>
+    // Mobile drawer
+    (function () {
+      const openBtn = document.getElementById('mOpen');
+      const closeBtn = document.getElementById('mClose');
+      const drawer = document.getElementById('mDrawer');
+      const overlay = document.getElementById('mOverlay');
+      if (!openBtn || !closeBtn || !drawer || !overlay) return;
+
+      const open = () => {
+        overlay.classList.remove('hidden');
+        drawer.classList.remove('-translate-x-full');
+        document.documentElement.classList.add('overflow-hidden');
+        document.body.classList.add('overflow-hidden');
+      };
+      const close = () => {
+        overlay.classList.add('hidden');
+        drawer.classList.add('-translate-x-full');
+        document.documentElement.classList.remove('overflow-hidden');
+        document.body.classList.remove('overflow-hidden');
+      };
+
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', close);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    })();
+
+    // Catalog mobile filters bottom sheet
+    (function () {
+      const openBtn = document.querySelector('[data-open-filters]');
+      const sheet = document.getElementById('mFiltersSheet');
+      const overlay = document.getElementById('mFiltersOverlay');
+      const closeBtn = document.querySelector('[data-close-filters]');
+      if (!openBtn || !sheet || !overlay || !closeBtn) return;
+
+      const open = () => {
+        overlay.classList.remove('hidden');
+        sheet.classList.remove('translate-y-full');
+        document.documentElement.classList.add('overflow-hidden');
+        document.body.classList.add('overflow-hidden');
+      };
+      const close = () => {
+        overlay.classList.add('hidden');
+        sheet.classList.add('translate-y-full');
+        document.documentElement.classList.remove('overflow-hidden');
+        document.body.classList.remove('overflow-hidden');
+      };
+
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', close);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    })();
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
